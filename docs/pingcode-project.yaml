@@ -1,0 +1,6 @@
+# Project IDs must come from the PingCode Web address bar or an API response.
+# Do not put credentials or secrets in this file.
+project_id: ""
+project_identifier: ""
+test_project_id: ""
+notes: ""

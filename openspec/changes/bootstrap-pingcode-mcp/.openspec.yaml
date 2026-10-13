@@ -1,0 +1,2 @@
+schema: spec-driven
+goal: 交付可用的 MCP stdio server，并通过隔离测试项目完成第一次自举验收

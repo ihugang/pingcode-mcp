@@ -1,0 +1,15 @@
+bin/
+pingcode-mcp
+release/darwin/
+release/linux/
+release/windows/
+.env
+.env.*
+!.env.example
+.pingcode.env
+.king-pingcode.env
+*.log
+.DS_Store
+pingcode-mcp-go-docs.zip
+.agents/tasks/
+.kiro/codex-tasks/*-run.log

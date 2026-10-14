@@ -20,9 +20,14 @@ import (
 	"github.com/ihugang/pingcode-mcp-go/internal/security"
 )
 
-const version = "0.1.0-dev"
+// PRD FR-003; OpenSpec pingcode-mcp-setup-skill task 2.2; PingCode ID: PENDING.
+var version = "0.1.0-dev"
 
 func main() {
+	if len(os.Args) == 2 && (os.Args[1] == "--version" || os.Args[1] == "version") {
+		fmt.Fprintln(os.Stdout, version)
+		return
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	err := run(ctx)
 	stop()

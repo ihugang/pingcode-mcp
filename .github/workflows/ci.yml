@@ -25,3 +25,8 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer unit tests
+        run: python -m unittest discover -s skills/pingcode-mcp-setup/scripts -p 'test_*.py' -v

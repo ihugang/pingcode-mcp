@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Check tag and Go formatting
+        shell: bash
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tags must use vMAJOR.MINOR.PATCH."
+            exit 1
+          fi
+          files="$(gofmt -l .)"
+          if [[ -n "$files" ]]; then
+            printf '%s\n' "$files"
+            exit 1
+          fi
+      - name: Vet
+        run: go vet ./...
+      - name: Build
+        run: go build ./...
+      - name: Test
+        run: go test ./...
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer unit tests
+        run: python -m unittest discover -s skills/pingcode-mcp-setup/scripts -p 'test_*.py' -v
+      - name: Cross-compile release archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$GITHUB_REF_NAME"
+          version_number="${version#v}"
+          mkdir -p dist
+          printf '%s\n' "$version" > dist/VERSION.txt
+          for target in "darwin amd64" "darwin arm64" "linux amd64" "linux arm64" "windows amd64" "windows arm64"; do
+            read -r goos goarch <<< "$target"
+            temp_dir="$(mktemp -d)"
+            binary="pingcode-mcp"
+            extension="tar.gz"
+            if [[ "$goos" == "windows" ]]; then
+              binary="pingcode-mcp.exe"
+              extension="zip"
+            fi
+            archive="pingcode-mcp_${version_number}_${goos}_${goarch}.${extension}"
+            GOOS="$goos" GOARCH="$goarch" CGO_ENABLED=0 go build \
+              -trimpath \
+              -ldflags "-s -w -X main.version=${version}" \
+              -o "$temp_dir/$binary" ./cmd/pingcode-mcp
+            if [[ "$extension" == "zip" ]]; then
+              (cd "$temp_dir" && zip -q "$GITHUB_WORKSPACE/dist/$archive" "$binary")
+            else
+              tar -C "$temp_dir" -czf "$GITHUB_WORKSPACE/dist/$archive" "$binary"
+            fi
+            rm -rf "$temp_dir"
+          done
+          (cd dist && sha256sum pingcode-mcp_* VERSION.txt > SHA256SUMS)
+      - name: Attest release assets
+        uses: actions/attest@v4
+        with:
+          subject-checksums: dist/SHA256SUMS
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --generate-notes

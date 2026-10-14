@@ -9,6 +9,8 @@ release/windows/
 .pingcode.env
 .king-pingcode.env
 *.log
+__pycache__/
+*.py[cod]
 .DS_Store
 pingcode-mcp-go-docs.zip
 .agents/tasks/

@@ -2,7 +2,7 @@
 
 PingCode MCP Server 是一个基于官方 Go MCP SDK 的本地 stdio 服务，为 MCP 客户端提供受控的 PingCode 项目与工作项访问能力。当前实现默认只读，项目定向读取和写入都受 `PINGCODE_ALLOWED_PROJECT_IDS` 白名单限制；stdout 只承载 MCP 协议，日志写入 stderr。
 
-> **发布状态：** 本项目以 [MIT License](LICENSE) 发布，公开仓库地址为 <https://github.com/ihugang/pingcode-mcp>。[v0.1.0 GitHub Release](https://github.com/ihugang/pingcode-mcp/releases/tag/v0.1.0) 提供预编译资产；FR-012 真实租户验收仍为 `INTEGRATION-PENDING`。
+> **发布状态：** 本项目以 [MIT License](LICENSE) 发布，公开仓库地址为 <https://github.com/ihugang/pingcode-mcp>。[v0.1.1 GitHub Release](https://github.com/ihugang/pingcode-mcp/releases/tag/v0.1.1) 提供预编译资产；FR-012 真实租户验收仍为 `INTEGRATION-PENDING`。
 
 ## 跨 IDE Skill 与预编译安装
 
@@ -13,6 +13,29 @@ PingCode MCP Server 是一个基于官方 Go MCP SDK 的本地 stdio 服务，�
 - **安装 MCP 服务：** 导入 Skill 后，运行其中 `scripts/install.py`。安装器支持 `--dry-run`、版本固定、预编译 Release、SHA-256 校验和选定 IDE 配置，并读取运行环境中的 `HTTP_PROXY`/`HTTPS_PROXY`（及小写形式）、必要时回退到 `ALL_PROXY`，遵守 `NO_PROXY` 下载资产。
 
 安装 Skill 与注册 MCP Server 是两步操作。安装器只写入 `PINGCODE_READ_ONLY=true`，不读取或保存 PingCode 凭据；`--dry-run` 不联网、不下载、不写入文件。若需要源码构建，必须显式加 `--build-from-source` 并安装 Go 1.25+。
+
+### 给 Agent 的可复制提示词
+
+先把 Skill 导入当前 IDE。下面这段提示词只要求 Agent 安装 Skill，不会安装或配置 MCP Server：
+
+```text
+请把 PingCode MCP Setup Skill 安装到当前 IDE/Agent：
+https://github.com/ihugang/pingcode-mcp/tree/main/skills/pingcode-mcp-setup
+
+先识别当前 IDE，并按该 IDE 支持的 Agent Skills 导入方式安装。若你可以操作本机文件，请从上述公开 GitHub 目录获取完整 Skill，并保留 SKILL.md、scripts/ 和 references/；若必须由我在 IDE 界面导入，请给出准确的菜单路径和要粘贴的链接。完成后确认 Skill 能被当前 Agent 发现。
+
+这一步只安装 Skill。不要下载、安装、启动或注册 PingCode MCP Server，不要修改 MCP 配置，也不要索取 PingCode 凭据。
+```
+
+需要安装本地 MCP Server 时，再向已导入该 Skill 的 Agent 发送：
+
+```text
+请使用已安装的 PingCode MCP Setup Skill，为当前 IDE 安装并注册 PingCode MCP Server。
+
+先识别当前 IDE、操作系统/架构和安装范围。第一步只运行安装器的 --dry-run；向我展示版本、目标二进制和配置路径、将发生的配置变更。等我明确回复“确认安装”后，才执行下载、安装或写入配置；若终端非交互，仅在收到该确认后使用 --yes。下载时使用当前运行环境中的 HTTP_PROXY、HTTPS_PROXY、ALL_PROXY 和 NO_PROXY 设置，不要打印代理地址。
+
+保持 PINGCODE_READ_ONLY=true，不要请求、读取或保存任何 PingCode 凭据，不要调用真实 PingCode API。安装后只验证本地 MCP initialize 和 tools/list，并报告结果。
+```
 
 ## 支持范围
 

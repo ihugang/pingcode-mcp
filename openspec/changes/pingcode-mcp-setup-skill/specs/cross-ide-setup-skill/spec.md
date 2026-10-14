@@ -6,6 +6,8 @@
 
 项目 SHALL 提供一个 PingCode MCP 安装 Skill 目录，包含有效的 Agent Skills `SKILL.md`、可执行本地安装器及按需读取的客户端参考。Skill MUST 区分导入 Skill 与安装/注册 MCP Server。
 
+README SHALL 提供可复制给 IDE Agent 的 Skill 导入提示词和 MCP Server 安装提示词。两段提示词 MUST 明确各自操作范围；MCP Server 安装提示词 MUST 要求先预览计划并等待用户明确确认，且保留代理设置、只读默认值和凭据安全边界。
+
 #### Scenario: 将 Skill 导入 Kiro
 
 - **GIVEN** GitHub 子目录中包含 `SKILL.md`、安装器和 references
@@ -20,6 +22,14 @@
 - **WHEN** 用户按该客户端支持的 user 或 workspace 目录安装此 Skill
 - **THEN** 客户端可以发现同一份核心指令
 - **AND** Skill 参考分别说明该客户端的 MCP 配置差异
+
+#### Scenario: 通过 README 提示词安装
+
+- **GIVEN** 用户将 README 中对应的提示词提供给兼容的 IDE Agent
+- **WHEN** 用户请求导入 Skill 或安装 MCP Server
+- **THEN** Skill 导入提示词只安装 Skill，不触发 MCP Server 下载或配置
+- **AND** MCP Server 安装提示词先运行 `--dry-run` 并展示目标与变更计划，等待用户明确确认后才执行下载和配置写入
+- **AND** 下载沿用运行环境代理设置，配置保持 `PINGCODE_READ_ONLY=true`，Agent 不索取或保存 PingCode 凭据
 
 ### Requirement: Client-Specific MCP Setup Guidance
 

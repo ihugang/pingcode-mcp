@@ -13,6 +13,7 @@
 - 提供一份 IDE 无关的 Agent Skill 主说明，并按需读取各 IDE 的安装配置参考。
 - 用户可以清楚地区分两个操作：把 Skill 安装到 Agent，以及把 PingCode MCP Server 注册到 IDE。
 - GitHub 上的 Skill 目录可被 Kiro 导入，也可供其他支持 Agent Skills 的客户端安装。
+- README 提供两段给 Agent 使用的可复制提示词：一段只导入 Skill；另一段在用户明确要求后，通过 dry-run 和显式确认安装 MCP Server。
 - 不更改当前服务的只读默认值、白名单要求、凭据来源或工具集合。
 
 ## Proposed Structure
@@ -28,6 +29,8 @@ skills/pingcode-mcp-setup/
 ```
 
 主文件保留任务识别、信息收集、安全约束和安装器入口；具体 IDE 配置格式放进引用文档。`install.py` 负责本机安装和 MCP 配置，不实现 PingCode API 调用，不读取或保存 Secret。除非负责人要求，否则不重复维护一份与 README 完全相同的安装手册。
+
+README 按负责人后续要求包含两段面向 IDE Agent 的提示词，以区分只导入 Skill 与安装/注册服务；服务安装提示词要求先预览计划、明确确认后再执行，并保留代理、只读和凭据安全约束。
 
 ## Installer Contract
 

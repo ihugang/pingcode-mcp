@@ -21,3 +21,4 @@
 - [x] 3.2 使用 Agent Skills validator 校验结构和 frontmatter；本地安装脚本与 MCP initialize/tools/list 验证通过（关联 FR-003；Spec：`cross-ide-setup-skill`；验证：skill-creator `quick_validate.py` 通过；PingCode ID：`PENDING`）。
 - [x] 3.3 检查 `git diff`、`git status`、忽略文件及秘密扫描结果，确认没有本机凭据、用户配置或二进制进入发布内容；负责人独立验收后再决定提交与发布（关联 FR-010；Spec：`cross-ide-setup-skill`；验证：15 个变更/未跟踪文件高置信凭据模式扫描无命中，两个本地凭据文件模式均保持忽略；PingCode ID：`PENDING`）。
 - [ ] 3.4 在 Kiro IDE 与至少一个其他客户端中验证 Skill/MCP 发现（关联 FR-003；Spec：`cross-ide-setup-skill`；验证：实际客户端截图或可复现记录；当前未操作用户 IDE，待负责人验收环境；PingCode ID：`PENDING`）。
+- [x] 3.5 在 README 增加两段可复制的 IDE Agent 提示词，分别覆盖只导入 Skill 与经 dry-run/明确确认后安装 MCP Server；提示词保留代理、只读和凭据安全边界（关联 FR-003、FR-010；Spec：`cross-ide-setup-skill`；验证：逐项核对提示词与安装器行为、README 链接；PingCode ID：`PENDING`）。

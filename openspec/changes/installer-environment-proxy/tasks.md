@@ -14,6 +14,6 @@ PingCode 需求 ID：`PENDING`。
 
 ## 3. Validation and Release
 
-- [x] 3.1 运行 Python 28 项离线单测、`gofmt -l .`、`go vet ./...`、`go build ./...`、`go test ./...`、Python 编译、`git diff --check` 和 GitHub token/Bearer 模式扫描；目前通过。GitHub Release 下载只在临时目录尝试，端到端资产读取未完成（FR-003；PingCode ID：`PENDING`）。
+- [x] 3.1 运行 Python 28 项离线单测、`gofmt -l .`、`go vet ./...`、`go build ./...`、`go test ./...`、Python 编译、`git diff --check` 和 GitHub token/Bearer 模式扫描；均通过。通过环境代理下载了 `SHA256SUMS`，7 条摘要与 GitHub Release asset digest 一致；darwin/arm64 压缩包响应头为 200，但读取 3 MiB 响应体持续无数据，故未完成解包安装（FR-003；PingCode ID：`PENDING`）。
 - [x] 3.2 使用 Ruby 标准库 YAML parser 检查 `SKILL.md` frontmatter、必需字段和命名；通过。skill-creator `quick_validate.py` 因当前 Python 环境缺少 PyYAML 未能运行（FR-003；PingCode ID：`PENDING`）。
-- [ ] 3.3 发布新的补丁版本，核对 GitHub CI/Release workflow 与 Release 资产；等待工作流完成。
+- [x] 3.3 发布 `v0.1.1` 补丁版本；CI run `38539822679` 与 Release run `38540306109` 均通过。Release 是正式版本，含 6 个平台二进制、`SHA256SUMS`、`VERSION.txt`；attestation 步骤通过，7 个资产摘要与 GitHub asset digest 一致（FR-003；PingCode ID：`PENDING`）。

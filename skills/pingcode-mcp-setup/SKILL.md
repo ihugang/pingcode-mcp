@@ -24,6 +24,8 @@ python3 <skill-directory>/scripts/install.py --client kiro --scope user
 
 Windows 可使用 `py -3` 替代 `python3`。workspace 级安装要增加 `--workspace <现有工作区绝对路径>`。版本固定示例：`--version v1.2.3`。正常安装从 GitHub Releases 下载预编译程序；只有用户明确要求源码构建时才使用 `--build-from-source`，该方式要求 Go 1.25+。
 
+安装器下载 GitHub Release 时会读取当前进程的代理设置（`HTTP_PROXY`/`HTTPS_PROXY` 及其小写形式；未设置对应协议代理时也会尝试 `ALL_PROXY`），并遵守 `NO_PROXY`。当前只支持 HTTP(S) 代理；若仅配置了 SOCKS 代理且目标不在 `NO_PROXY` 中，安装器会安全停止。请在运行安装器的终端或 IDE 环境中配置代理；代理地址不会被安装器打印或写入客户端配置。
+
 5. 安装结束后检查本地 MCP `initialize` 与 `tools/list` 结果；按客户端提示刷新或重启 IDE。此检查不会调用 PingCode API，也不代表已完成真实 PingCode 联调。
 
 ## 安全边界

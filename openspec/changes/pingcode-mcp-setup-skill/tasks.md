@@ -13,7 +13,7 @@
 - [x] 2.3 新增 `skills/pingcode-mcp-setup/scripts/install.py`，实现平台/版本匹配、release 资产下载、SHA-256 校验、安全解包、用户目录安装、客户端选择、dry-run、配置合并、同名冲突保护、原子写入和 MCP 本地初始化/工具发现验证；源码构建只能由用户显式选择；不得读取/写入凭据或调用 PingCode API（关联 FR-003、FR-010；Spec：`cross-ide-setup-skill`；验证：23 项离线单测覆盖 mock release 成功、损坏摘要不落盘、错误平台、取消、超时、配置合并和权限边界；本地真实二进制 `initialize/tools/list` 通过；PingCode ID：`PENDING`）。
 - [x] 2.4 新增 `references/ide-setup.md`，涵盖 Kiro IDE、Codex、Claude Code、Cursor、VS Code/GitHub Copilot 的官方配置入口、用户级/workspace 级范围、stdio schema、release 安装和常见诊断；实施时记录逐项核对的官方资料链接（关联 FR-003；Spec：`cross-ide-setup-skill`；验证：逐项核对官方文档，检查示例 JSON/TOML；PingCode ID：`PENDING`）。
 - [x] 2.5 检查所有示例保持只读、不给危险工具默认授权、不含凭据或用户机器路径；审阅校验失败、平台不支持、安装失败、用户取消、超时和权限拒绝路径（关联 FR-010；Spec：`cross-ide-setup-skill`；验证：安全审查、diff/秘密扫描；PingCode ID：`PENDING`）。
-- [ ] 2.6 由负责人独立验收并发布稳定 `vX.Y.Z` tag；检查 GitHub Release 六种资产、SHA256SUMS 与 attestation，并从实际 GitHub Release 执行一次安装验证（关联 FR-003、FR-011；Spec：`cross-ide-setup-skill`；验证：真实 GitHub Release 和安装记录；该仓库规则要求 Agent 不得推送或发布；PingCode ID：`PENDING`）。
+- [ ] 2.6 检查 GitHub Release 六种资产、SHA256SUMS 与 attestation，并完成一次实际安装验证（关联 FR-003、FR-011；Spec：`cross-ide-setup-skill`；v0.1.0 已按负责人指示发布，GitHub CI/Release workflow 和 6 个资产、SHA256SUMS、attestation 均通过；临时目录安装验证未完成：一次停在 GitHub CLI attestation 阶段，另一次读取资产流时无响应，需重试；PingCode ID：`PENDING`）。
 
 ## 3. Project Documentation
 

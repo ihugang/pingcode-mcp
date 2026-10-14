@@ -91,13 +91,36 @@ def validate_tag(tag: str) -> str:
     return tag
 
 
+def environment_proxy_handler(url: str) -> urllib.request.ProxyHandler:
+    """Build a proxy handler from runtime settings without leaking proxy values."""
+    proxies = urllib.request.getproxies()
+    scheme = urllib.parse.urlparse(url).scheme.lower()
+    if scheme in {"http", "https"}:
+        selected_proxy = proxies.get(scheme)
+        if not selected_proxy and proxies.get("all"):
+            selected_proxy = proxies["all"]
+            proxies[scheme] = selected_proxy
+        if selected_proxy:
+            proxy_scheme = urllib.parse.urlparse(selected_proxy).scheme.lower()
+            if proxy_scheme and proxy_scheme not in {"http", "https"}:
+                host = urllib.parse.urlparse(url).hostname or ""
+                if not host or not urllib.request.proxy_bypass(host):
+                    raise InstallError(
+                        "当前安装器仅支持 HTTP(S) 代理；请设置 HTTP_PROXY 或 HTTPS_PROXY。"
+                    )
+    return urllib.request.ProxyHandler(proxies)
+
+
 def request_bytes(url: str, timeout: int = 30) -> bytes:
     request = urllib.request.Request(
         url,
         headers={"Accept": "application/vnd.github+json", "User-Agent": USER_AGENT},
     )
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        # Read proxy settings at download time so the installer follows the
+        # environment configured by the caller (including NO_PROXY bypasses).
+        opener = urllib.request.build_opener(environment_proxy_handler(url))
+        with opener.open(request, timeout=timeout) as response:
             final_host = urllib.parse.urlparse(response.geturl()).hostname or ""
             if (
                 final_host != "github.com"
@@ -108,7 +131,7 @@ def request_bytes(url: str, timeout: int = 30) -> bytes:
             data = response.read(MAX_DOWNLOAD_BYTES + 1)
     except InstallError:
         raise
-    except (urllib.error.URLError, TimeoutError, OSError):
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
         raise InstallError("无法从 GitHub 获取 release 资产；请检查网络后重试。") from None
     if len(data) > MAX_DOWNLOAD_BYTES:
         raise InstallError("下载文件超过 100 MiB 安全上限。")

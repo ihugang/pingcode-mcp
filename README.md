@@ -2,15 +2,15 @@
 
 PingCode MCP Server 是一个基于官方 Go MCP SDK 的本地 stdio 服务，为 MCP 客户端提供受控的 PingCode 项目与工作项访问能力。当前实现默认只读，项目定向读取和写入都受 `PINGCODE_ALLOWED_PROJECT_IDS` 白名单限制；stdout 只承载 MCP 协议，日志写入 stderr。
 
-> **发布状态：** 本项目以 [MIT License](LICENSE) 发布，公开仓库地址为 <https://github.com/ihugang/pingcode-mcp>。当前没有正式版本或 GitHub Release；FR-012 真实租户验收仍为 `INTEGRATION-PENDING`。
+> **发布状态：** 本项目以 [MIT License](LICENSE) 发布，公开仓库地址为 <https://github.com/ihugang/pingcode-mcp>。[v0.1.0 GitHub Release](https://github.com/ihugang/pingcode-mcp/releases/tag/v0.1.0) 提供预编译资产；FR-012 真实租户验收仍为 `INTEGRATION-PENDING`。
 
 ## 跨 IDE Skill 与预编译安装
 
-本次变更加入了可导入的 [PingCode MCP Setup Skill](skills/pingcode-mcp-setup/SKILL.md)，用于在 Kiro、Codex、Claude Code、Cursor 和 VS Code/GitHub Copilot 中查找 Skill 安装入口、安装本地 MCP 程序并保留现有客户端配置。GitHub 导入链接会在负责人验收并将变更发布到默认分支后生效。
+本次变更加入了可导入的 [PingCode MCP Setup Skill](skills/pingcode-mcp-setup/SKILL.md)，用于在 Kiro、Codex、Claude Code、Cursor 和 VS Code/GitHub Copilot 中查找 Skill 安装入口、安装本地 MCP 程序并保留现有客户端配置。GitHub 导入链接指向已发布的默认分支 Skill 目录。
 
 - **Kiro IDE：** Agent Steering & Skills → `Import a skill`，导入 [GitHub Skill 目录](https://github.com/ihugang/pingcode-mcp/tree/main/skills/pingcode-mcp-setup)。
 - **其他兼容客户端：** 将整个 `pingcode-mcp-setup` 目录放入对应的 Agent Skills 目录；路径见 [IDE 配置参考](skills/pingcode-mcp-setup/references/ide-setup.md)。
-- **安装 MCP 服务：** 导入 Skill 后，运行其中 `scripts/install.py`。安装器支持 `--dry-run`、版本固定、预编译 Release、SHA-256 校验和选定 IDE 配置。当前没有正式 Release，因此安装器暂时无法下载预编译程序；负责人发布 `vMAJOR.MINOR.PATCH` tag 后，GitHub Actions 会构建六种平台资产。
+- **安装 MCP 服务：** 导入 Skill 后，运行其中 `scripts/install.py`。安装器支持 `--dry-run`、版本固定、预编译 Release、SHA-256 校验和选定 IDE 配置，并读取运行环境中的 `HTTP_PROXY`/`HTTPS_PROXY`（及小写形式）、必要时回退到 `ALL_PROXY`，遵守 `NO_PROXY` 下载资产。
 
 安装 Skill 与注册 MCP Server 是两步操作。安装器只写入 `PINGCODE_READ_ONLY=true`，不读取或保存 PingCode 凭据；`--dry-run` 不联网、不下载、不写入文件。若需要源码构建，必须显式加 `--build-from-source` 并安装 Go 1.25+。
 

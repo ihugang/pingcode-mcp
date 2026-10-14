@@ -42,7 +42,7 @@
 |---|---|---|
 | FR-001 | 官方 API 研究与契约验证 | 记录官方鉴权端点、参数、scope、API 路径、分页、响应示例；不凭猜测实现 |
 | FR-002 | Client Credentials 鉴权 | 可获取并缓存 Token；到期前刷新；失败时明确报错且不泄露 Secret |
-| FR-003 | MCP stdio Server 与客户端接入 | Codex 等支持 MCP stdio 的客户端能列出并调用工具；提供 Kiro 等 Agent Skills 兼容 IDE 的 Skill 安装与 MCP 接入说明；stdout 只用于 MCP 协议 |
+| FR-003 | MCP stdio Server 与客户端接入 | Codex 等支持 MCP stdio 的客户端能列出并调用工具；提供 Kiro 等 Agent Skills 兼容 IDE 的 Skill 安装与 MCP 接入说明；安装器下载遵循运行环境的 HTTP(S) 代理配置；stdout 只用于 MCP 协议 |
 | FR-004 | `pingcode_list_projects` | 可分页列出有权限的项目 |
 | FR-005 | `pingcode_get_project` | 按 ID 获取项目详情；不存在时明确提示 |
 | FR-006 | `pingcode_list_work_items` | 按项目/类型/状态过滤并分页；只返回授权数据 |

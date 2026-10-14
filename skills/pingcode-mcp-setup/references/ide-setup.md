@@ -38,6 +38,8 @@ Windows 使用 `py -3`。Python 3.11+ 是安装器前置条件；常规预编译
 | Cursor | `~/.cursor/mcp.json` | `.cursor/mcp.json` | JSON，`mcpServers`，stdio 项需要 `type: "stdio"` |
 | VS Code / Copilot | `~/.copilot/mcp-config.json` | `.mcp.json` | portable JSON，`mcpServers` |
 
+下载 GitHub Release 时，安装器通过 Python 标准库读取当前进程的 `HTTP_PROXY`/`HTTPS_PROXY`（也接受小写形式）；对应协议未设置时会尝试 `ALL_PROXY`，并遵守 `NO_PROXY`。当前只支持 HTTP(S) 代理；如果只配置 SOCKS 代理且目标不在 `NO_PROXY` 中，安装器会停止并要求提供 HTTP(S) 代理。请在启动安装器的终端或 IDE 环境中设置代理；安装器不会显示代理值或写入客户端配置。
+
 workspace 配置可能进入 Git。安装器仅添加 `PINGCODE_READ_ONLY=true`，不得添加真实凭据。VS Code 同样支持 `.vscode/mcp.json` 的 VS Code 专用格式；本安装器使用 portable `.mcp.json` 以适配 Agent Host。
 
 安装器将程序放到当前用户目录，并在配置中使用绝对程序路径：

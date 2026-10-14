@@ -1,0 +1,2 @@
+schema: spec-driven
+goal: 安装器下载 GitHub Release 时遵循运行环境定义的代理

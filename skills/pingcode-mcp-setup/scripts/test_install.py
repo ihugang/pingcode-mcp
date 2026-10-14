@@ -36,6 +36,65 @@ class PlatformTests(unittest.TestCase):
 
 
 class ReleaseValidationTests(unittest.TestCase):
+    def test_download_opener_uses_environment_proxy_settings(self) -> None:
+        url = "https://github.com/ihugang/pingcode-mcp/releases/download/v1.2.3/asset.tar.gz"
+        proxies = {
+            "http": "http://proxy.example:8080",
+            "https": "http://proxy.example:8080",
+            "no": "localhost,127.0.0.1",
+        }
+        response = mock.MagicMock()
+        response.__enter__.return_value = response
+        response.geturl.return_value = url
+        response.read.return_value = b"release asset"
+        opener = mock.MagicMock()
+        opener.open.return_value = response
+
+        with mock.patch.object(install.urllib.request, "getproxies", return_value=proxies) as getproxies, \
+            mock.patch.object(install.urllib.request, "build_opener", return_value=opener) as build_opener:
+            result = install.request_bytes(url, timeout=17)
+
+        self.assertEqual(result, b"release asset")
+        getproxies.assert_called_once_with()
+        proxy_handler = build_opener.call_args.args[0]
+        self.assertIsInstance(proxy_handler, install.urllib.request.ProxyHandler)
+        self.assertEqual(proxy_handler.proxies, proxies)
+        opener.open.assert_called_once_with(mock.ANY, timeout=17)
+
+    def test_all_proxy_is_used_when_protocol_proxy_is_missing(self) -> None:
+        url = "https://github.com/ihugang/pingcode-mcp/releases/latest"
+        proxies = {"all": "http://proxy.example:8080", "no": "localhost"}
+        with mock.patch.object(install.urllib.request, "getproxies", return_value=proxies):
+            handler = install.environment_proxy_handler(url)
+        self.assertEqual(handler.proxies["https"], "http://proxy.example:8080")
+
+    def test_unsupported_all_proxy_fails_without_exposing_value_or_bypassing(self) -> None:
+        marker = "redacted-proxy-marker"
+        proxies = {"all": f"socks5h://user:{marker}@proxy.example:1080"}
+        with mock.patch.object(install.urllib.request, "getproxies", return_value=proxies), \
+            mock.patch.object(install.urllib.request, "proxy_bypass", return_value=False), \
+            mock.patch.object(install.urllib.request, "build_opener") as build_opener:
+            with self.assertRaises(install.InstallError) as caught:
+                install.request_bytes("https://github.com/ihugang/pingcode-mcp/releases/latest")
+        self.assertNotIn(marker, str(caught.exception))
+        build_opener.assert_not_called()
+
+    def test_no_proxy_bypasses_unsupported_all_proxy(self) -> None:
+        proxies = {"all": "socks5h://proxy.example:1080", "no": "github.com"}
+        with mock.patch.object(install.urllib.request, "getproxies", return_value=proxies), \
+            mock.patch.object(install.urllib.request, "proxy_bypass", return_value=True):
+            handler = install.environment_proxy_handler("https://github.com/ihugang/pingcode-mcp/releases/latest")
+        self.assertIsInstance(handler, install.urllib.request.ProxyHandler)
+
+    def test_invalid_proxy_error_does_not_expose_proxy_value(self) -> None:
+        secret_proxy = "http://user:redacted-proxy-marker@proxy.example:invalid"
+        with mock.patch.object(
+            install.urllib.request, "ProxyHandler", side_effect=ValueError(f"invalid proxy {secret_proxy}")
+        ):
+            with self.assertRaises(install.InstallError) as caught:
+                install.request_bytes("https://github.com/ihugang/pingcode-mcp/releases/latest")
+        self.assertNotIn("redacted-proxy-marker", str(caught.exception))
+
     def test_checksum_accepts_expected_asset(self) -> None:
         payload = b"fake archive"
         name = "pingcode-mcp_1.2.3_linux_amd64.tar.gz"
